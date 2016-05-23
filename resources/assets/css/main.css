@@ -1,0 +1,258 @@
+html, body {
+	background-color:#F5F5F5;
+	color: #6B6B6B;
+	font-family: 'Maven Pro', sans-serif;
+}
+a {
+	color: #bdbdbd;
+}
+.container{
+	margin-top: 30px;
+}
+
+.topi {
+	margin-top-top:10px !important;
+	font-size: 30px;
+	color: white;
+}
+.menu-text .topi {
+	color:white !important;
+}
+.spacing .li {
+	padding-right: 10px;
+	padding-left: 10px;
+}
+
+.error {
+	color: #EE3B3B;
+}
+
+.log-in-form {
+  border: 1px solid #cacaca;
+  padding: 1rem;
+  border-radius: 3px; 
+}
+
+form {
+	background-color: white;
+}
+.log-in-form div {
+	padding:10px;
+	width:100%;
+}
+
+#responsive-menu a.white-a {
+	color:white;
+}
+
+.reveal {
+	position: fixed;
+	top:20px;
+	left:5%;
+}
+textarea {
+	height:300px;
+}
+a.inspire{
+	font-size: 12px;
+	color:blue !important;
+	text-transform: lowercase !important;
+	text-transform: capitalize !important;
+}
+
+a.inspire :hover {
+	text-decoration: underline;
+}
+
+.box-container {
+	max-width: 1200px;
+	height: auto;
+	margin:0 auto;
+	margin-top: 30px;
+}
+.box-container h4 {
+	text-align: center;
+}
+
+.row {
+	width: 100%;
+}
+
+#comment {
+	height:120px;
+	width: 100%;
+}
+#comment-form {
+	background-color: transparent;
+}
+
+.navprofile {
+	border-radius: 50px;
+	height:20px;
+	margin-bottom: 10px;
+}
+
+.profilepic {
+	border-radius: 150px;
+	border-style: solid;
+	border-width: 10px;
+	border-color: #3adb76;
+}
+
+.top-bar {
+	background-color:#6fe26f;
+	box-shadow: 0px 0px 5px #dbdbdb;
+	max-height: 45px;
+}
+
+#profilepagepic {
+	text-align: center;
+}
+
+#navpic {
+	color:white;
+}
+@media (max-width: 1000px) {
+   	.reveal {
+		position: initial;
+	}
+}
+
+@media (max-width: 640px) {
+   	#navpic {
+		color:#6B6B6B;
+	}
+
+	.card .image img {
+		width:100%;
+		height:auto;
+	}
+
+}
+
+@media (max-width: 1020px) {
+
+	.card .image img {
+		width:100%;
+		height:auto;
+	}
+
+}
+/*-----------------------------cards---------------------------------------*/
+.card {
+  overflow: hidden;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+  color: #6B6B6B;
+  border-radius: 5px; 
+  background-color:white;
+  margin-bottom: 20px;
+}
+.card .title {
+line-height: 3rem;
+font-size: 1.5rem;
+font-weight: 300; }
+.card .content {
+padding: 1.3rem;
+font-weight: 300;
+border-radius: 0 0 2px 2px; }
+.card p {
+margin: 0; }
+.card .action {
+border-top: 1px solid rgba(160, 160, 160, 0.2);
+padding: 1.3rem; }
+.card a {
+color: #4CDB4C;
+margin-right: 1.3rem;
+transition: color 0.3s ease;
+text-decoration: none; }
+.card .image {
+position: relative; }
+.card .image .title {
+position: absolute;
+bottom: 0;
+left: 0;
+padding: 1.3rem;
+color: #fff; }
+.card .image img {
+border-radius: 2px 2px 0 0; 
+}
+.card .video video {
+	width:100%;
+	height:auto;
+}
+.card
+{
+	margin: 10px;
+}
+.grid-item {
+	width: 25%;
+}
+@media (max-width: 1500px) {
+
+	.grid-item {
+		width: 20%;
+	}
+
+}
+
+@media (max-width: 1300px) {
+
+	.grid-item {
+		width: 20%;
+	}
+
+}
+@media (max-width: 900px) {
+
+	.grid-item {
+		width: 33.3%;
+	}
+
+}
+@media (max-width: 700px) {
+
+	.grid-item {
+		width: 50%;
+	}
+
+}
+@media (max-width: 600px) {
+
+	.grid-item {
+		width: 100%;
+		margin:0 auto;
+	}
+}
+
+
+.uninspire {
+	color: grey !important; 
+	font-size: 12px;
+}
+
+
+
+
+.ui.dropdown.search {
+	margin-bottom: 10px;
+}
+/*------------------------------------------------------------------------------------*/
+
+
+.top-space {
+	margin-top: 20px;
+}
+
+a.white {
+	color:white !important;
+}
+
+.user-connection-profile, .card_image {
+	border-radius: 20px;
+	height:40px;
+	width:40px;	
+}
+
+.card_image {
+	padding: 10px;
+}

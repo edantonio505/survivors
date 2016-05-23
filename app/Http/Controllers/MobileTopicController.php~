@@ -1,0 +1,45 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Response;
+use App\Http\Requests;
+use App\TopicOfTheDay;
+
+class MobileTopicController extends Controller
+{
+   	public function index()
+   	{
+   		$topicsOfTheDay = TopicOfTheDay::orderBy('created_at', 'desc')->paginate(7);
+
+   		$topics = [];
+		$topics['total'] = $topicsOfTheDay->total();
+		$topics['per_page'] = $topicsOfTheDay->perPage();
+		$topics['current_page'] = $topicsOfTheDay->currentPage();
+		$topics['last_page'] = $topicsOfTheDay->lastPage();
+		$topics['next_page_url'] = $topicsOfTheDay->nextPageUrl();
+		$topics['prev_page_url'] = $topicsOfTheDay->previousPageUrl();
+		$topics['from'] = $topicsOfTheDay->toArray()['from'];
+		$topics['to'] = $topicsOfTheDay->toArray()['to'];
+		$topics['data'] = [];
+		
+		foreach($topicsOfTheDay as $topicDay)
+		{	
+			$topic['id'] = $topicDay->id;
+			$topic['title'] = $topicDay->title;
+			$topic['summary'] = substr($topicDay->body, 0, 100);
+			$topic['body'] = $topicDay->body;
+			$topic['user_name'] = $topicDay->user->name;
+			$topic['user_avatar'] = $topicDay->user->getAvatarListUrl();
+			$topic['created_time'] = $topicDay->created_at->diffForHumans();
+			$topic['comments_ammount'] = $topicDay->commentsCount();
+			$data[] = $topic;		
+		}
+
+
+		$topics['data'] = $data;
+   		return Response::json($topics, 200);
+   	}
+
+}
