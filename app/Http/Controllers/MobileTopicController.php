@@ -29,6 +29,7 @@ class MobileTopicController extends Controller
 	
    	public function index($authUser)
    	{
+      $data = [];
       $user = User::where('email', $authUser)->first();
    		$topicsOfTheDay = TopicOfTheDay::orderBy('created_at', 'desc')->paginate(10);
    		$topics = [];
