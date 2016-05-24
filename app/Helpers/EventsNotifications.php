@@ -77,6 +77,11 @@ class EventsNotifications {
 			'topic_id' => $topic_id,
 			$emmiterType => $emmiter
 		]);
+
+		if($receptor->EventLogs->count() >= 20)
+		{
+			$receptor->EventLogs->first()->delete();
+		}
 	}
 }
 ?>
