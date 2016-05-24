@@ -7,7 +7,6 @@ use App\TopicOfTheDay;
 use App\Inspiration;
 use App\Events\UserConnectionAdded;
 use App\Events\UserAcceptedConnection;
-use App\Events\YouAcceptedConnection;
 use App\Helpers\EventsNotifications;
 
 class User extends Authenticatable
@@ -122,9 +121,9 @@ class User extends Authenticatable
 
     public function acceptConnectionRequest(User $user)
     {   
-        event(new YouAcceptedConnection($this->name));
         event(new UserAcceptedConnection($this->name, $user->name));
         $this->createLog('user_accepted_connection', $user, $this->name);
+        
         $this->connectionRequests()->where('id', $user->id)->first()
         ->pivot->update(['accepted'=>true]);
     }
