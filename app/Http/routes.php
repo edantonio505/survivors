@@ -40,7 +40,7 @@ Route::group(['prefix' => 'api/v1', 'middleware' => 'cors'], function()
 // Event Logs Controller
 Route::group(['prefix' => 'api/v1', 'middleware' => 'cors'], function()
 {
-    Route::post('logsViewed/{username}', 'EventsController@logsViewed');
+    Route::post('logs_viewed/{username}', 'EventsController@logsViewed');
 });
 
 /*

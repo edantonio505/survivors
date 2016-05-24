@@ -9,8 +9,8 @@ use App\User;
 
 class EventsController extends Controller
 {
-    public function logsViewd($username)
-    {
+    public function logsViewed($username)
+    {	
     	$user = User::where('name', $username)->first();
     	$events = $user->EventLogs;
 
