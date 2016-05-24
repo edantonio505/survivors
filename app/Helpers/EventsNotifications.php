@@ -78,7 +78,7 @@ class EventsNotifications {
 			$emmiterType => $emmiter
 		]);
 
-		if($receptor->EventLogs->count() >= 20)
+		if($receptor->EventLogs->count() >= 16)
 		{
 			$receptor->EventLogs->first()->delete();
 		}
