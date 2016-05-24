@@ -8,6 +8,7 @@ use App\Inspiration;
 use App\Events\UserConnectionAdded;
 use App\Events\UserAcceptedConnection;
 use App\Events\YouAcceptedConnection;
+use App\Helpers\EventsNotifications;
 
 class User extends Authenticatable
 {
@@ -114,6 +115,7 @@ class User extends Authenticatable
     }
     public function addConnection(User $user)
     {   
+        $this->createLog('new_connection', $user, $this->name);
         event(new UserConnectionAdded($this->name, $user->name));
         $this->connectionOf()->attach($user->id);
     }
@@ -122,12 +124,19 @@ class User extends Authenticatable
     {   
         event(new YouAcceptedConnection($this->name));
         event(new UserAcceptedConnection($this->name, $user->name));
+        $this->createLog('user_accepted_connection', $user, $this->name);
         $this->connectionRequests()->where('id', $user->id)->first()
         ->pivot->update(['accepted'=>true]);
     }
     public function isConnectionsWith(User $user)
     {
         return (bool) $this->connections()->where('id', $user->id)->count();
+    }
+
+    private function createLog($type, User $receptor, $emmiter)
+    {
+        $ev = new EventsNotifications();
+        $ev->createEventLog($type, $receptor, $emmiter);
     }
     //-----------------------------------------------------------------------------------------------
 }

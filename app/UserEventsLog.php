@@ -8,6 +8,7 @@ class UserEventsLog extends Model
 {	
 	protected $fillable = [
 		'type',
+		'topic_id',
 		'userCommenter',
 		'inspiredUser',
 		'newConnection',
