@@ -41,7 +41,7 @@ class User extends Authenticatable
 
     public function EventLogs()
     {
-        return $this->hasOne('App\UserEventsLog');
+        return $this->hasMany('App\UserEventsLog');
     }
 
     public function Topics()

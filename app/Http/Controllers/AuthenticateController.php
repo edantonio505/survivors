@@ -37,7 +37,85 @@ class AuthenticateController extends Controller
  
         // if no errors are encountered we can return a JWT
         $user = User::where('email', $request->input('email'))->first();
-        return response()->json(['token' => $token, 'user_name' => $user->name, 'user_avatar' => $user->getAvatarListUrl()]);
+
+        $logs = [];
+        foreach($user->EventLogs->sortByDesc('id') as $log)
+        { 
+          if($log->type == 'new_comment')
+          {
+            $event['id'] = $log->id;
+            $event['type'] = $log->type;
+            $event['topic_id'] = $log->topic_id;
+            $event['userCommenter'] = $log->userCommenter;
+            $event['inspiredUser'] = null;
+            $event['connectionPosting'] = null;
+            $event['newConnection'] = null;
+            $event['AcceptingUser'] = null;
+            $event['connectionPosting'] = null;
+          }
+
+          if($log->type == 'user_inspired')
+          {
+            $event['id'] = $log->id;
+            $event['type'] = $log->type;
+            $event['topic_id'] = $log->topic_id;
+            $event['userCommenter'] = null;
+            $event['inspiredUser'] = $log->inspiredUser;
+            $event['connectionPosting'] = null;
+            $event['newConnection'] = null;
+            $event['AcceptingUser'] = null;
+            $event['connectionPosting'] = null;
+          }
+
+          if($log->type == 'new_connection')
+          {
+            $event['id'] = $log->id;
+            $event['type'] = $log->type;
+            $event['topic_id'] = null;
+            $event['userCommenter'] = null;
+            $event['inspiredUser'] = null;
+            $event['connectionPosting'] = null;
+            $event['newConnection'] = $log->newConnection;
+            $event['AcceptingUser'] = null;
+            $event['connectionPosting'] = null;
+          }
+
+          if($log->type == 'user_accepted_connection')
+          {
+            $event['id'] = $log->id;
+            $event['type'] = $log->type;
+            $event['topic_id'] = null;
+            $event['userCommenter'] = null;
+            $event['inspiredUser'] = null;
+            $event['connectionPosting'] = null;
+            $event['newConnection'] = null;
+            $event['AcceptingUser'] = $log->AcceptingUser;
+            $event['connectionPosting'] = null;
+          }
+
+          if($log->type == 'connections_newpost')
+          {
+            $event['id'] = $log->id;
+            $event['type'] = $log->type;
+            $event['topic_id'] = $log->topic_id;
+            $event['userCommenter'] = null;
+            $event['inspiredUser'] = null;
+            $event['connectionPosting'] = null;
+            $event['newConnection'] = null;
+            $event['AcceptingUser'] = null;
+            $event['connectionPosting'] = $log->connectionPosting;
+          }
+
+          $logs[] = $event;
+        }
+
+        return response()->json([
+          'token' => $token, 
+          'user_name' => $user->name, 
+          'user_avatar' => $user->getAvatarListUrl(),
+          'event_logs' => $logs,
+          'log_count' => count($logs)
+        ]);
     }
 
 
