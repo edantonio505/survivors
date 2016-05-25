@@ -42,7 +42,7 @@ Route::group(['prefix' => 'api/v1', 'middleware' => 'cors'], function()
 Route::group(['prefix' => 'api/v1', 'middleware' => 'cors'], function()
 {
     Route::post('logs_viewed/{username}', 'EventsController@logsViewed');
-    Route::post('signup_oauth', 'EventsController@signupOauth');
+    Route::post('authenticate/signup_oauth', 'AuthenticateController@signupOauth');
 });
 
 /*
