@@ -109,6 +109,7 @@ class AuthenticateController extends Controller
         $user =  User::create([
             'name' => $name, 
             'email' => $data['email'],
+            'password' => bcrypt($request->input('password')),
             'first_name' => $data['given_name'],
             'last_name' => $data['family_name'],
             'gender' => $data['gender'],
