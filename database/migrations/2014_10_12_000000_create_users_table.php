@@ -20,8 +20,9 @@ class CreateUsersTable extends Migration
             $table->string('first_name')->nullable();
             $table->string('last_name')->nullable();
             $table->string('location')->nullable();
-            $table->enum('gender', ['m', 'f'])->default('m');
+            $table->enum('gender', ['male', 'female'])->default('male');
             $table->date('birthday')->nullable();
+            $table->string('avatar')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
