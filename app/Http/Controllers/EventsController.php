@@ -26,6 +26,10 @@ class EventsController extends Controller
 
     public function signupOauth(Request $request)
     {
-        return $request->input('access_token');
+        $q = 'https://www.googleapis.com/oauth2/v1/userinfo?access_token='.$request->input('access_token');
+        $json = file_get_contents($q);
+        $userInfoArray = json_decode($json,true);
+
+        return response()->json($userInfoArray);
     }
 }
