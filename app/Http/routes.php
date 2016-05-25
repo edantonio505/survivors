@@ -31,16 +31,18 @@ Route::group(['prefix' => 'api/v1', 'middleware' => 'cors'], function () {
 
 
 Route::group(['prefix' => 'api/v1', 'middleware' => 'cors'], function()
-{
+{   
     Route::resource('authenticate', 'AuthenticateController', ['only' => ['index']]);
     Route::post('authenticate', 'AuthenticateController@authenticate');
     Route::get('authenticate/user', 'AuthenticateController@getAuthenticatedUser');
+
 });
 
 // Event Logs Controller
 Route::group(['prefix' => 'api/v1', 'middleware' => 'cors'], function()
 {
     Route::post('logs_viewed/{username}', 'EventsController@logsViewed');
+    Route::post('signup_oauth', 'EventsController@signupOauth');
 });
 
 /*

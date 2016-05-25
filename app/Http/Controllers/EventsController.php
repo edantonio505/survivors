@@ -23,4 +23,9 @@ class EventsController extends Controller
     	}
     	return 'no logs';
     }
+
+    public function signupOauth(Request $request)
+    {
+        return $request->input('access_token');
+    }
 }
