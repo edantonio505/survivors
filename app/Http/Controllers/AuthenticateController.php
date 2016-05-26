@@ -24,7 +24,17 @@ class AuthenticateController extends Controller
    public function authenticate(Request $request)
     {
         $credentials = ['email' => $request->input('email'), 'password' => $request->input('password')];
-        return response()->json($this->getUserFromRequest($credentials));
+        try {
+             // verify the credentials and create a token for the user
+             if (! $token = JWTAuth::attempt($credentials)) {
+                 return response()->json(['error' => 'invalid_credentials'], 401);
+             }
+         } catch (JWTException $e) {
+             // something went wrong
+             return response()->json(['error' => 'could_not_create_token'], 500);
+         }
+
+        return response()->json($this->getUserFromRequest($credentials, $token));
     }
 
 
@@ -117,24 +127,23 @@ class AuthenticateController extends Controller
         ]);
 
         $credentials = ['email' => $user->email, 'password' => $request->input('password')];
-        return response()->json($this->getUserFromRequest($credentials));
+        try {
+             // verify the credentials and create a token for the user
+             if (! $token = JWTAuth::attempt($credentials)) {
+                 return response()->json(['error' => 'invalid_credentials'], 401);
+             }
+         } catch (JWTException $e) {
+             // something went wrong
+             return response()->json(['error' => 'could_not_create_token'], 500);
+         }
+        return response()->json($this->getUserFromRequest($credentials, $token));
     }
 
 
 
     // ----------------------------------------------------------------------------------------
-    private function getUserFromRequest($credentials)
+    private function getUserFromRequest($credentials, $token)
     {
-       try {
-            // verify the credentials and create a token for the user
-            if (! $token = JWTAuth::attempt($credentials)) {
-                return response()->json(['error' => 'invalid_credentials'], 401);
-            }
-        } catch (JWTException $e) {
-            // something went wrong
-            return response()->json(['error' => 'could_not_create_token'], 500);
-        }
- 
         // if no errors are encountered we can return a JWT
         $user = User::where('email', $credentials['email'])->first();
 
