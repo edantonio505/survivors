@@ -43,6 +43,7 @@ Route::group(['prefix' => 'api/v1', 'middleware' => 'cors'], function()
 {
     Route::post('logs_viewed/{username}', 'EventsController@logsViewed');
     Route::post('authenticate/signup_oauth', 'AuthenticateController@signupOauth');
+    Route::get('delegate', 'AuthenticateController@token');
 });
 
 /*

@@ -10,10 +10,10 @@ use App\User;
 
 class AuthenticateController extends Controller
 {	
-	public function __construct()
-   	{
-       $this->middleware('jwt.auth', ['except' => ['authenticate', 'signupOauth']]);
-   	}
+  public function __construct()
+  {
+    $this->middleware('jwt.auth', ['except' => ['authenticate', 'signupOauth']]);
+  }        
 
 
    public function index()
@@ -77,6 +77,20 @@ class AuthenticateController extends Controller
         $userR['topics'] = $this->userTopicsArray($user->Topics);
         $response['user'] = $userR;
         return response()->json($response);
+    }
+
+
+    public function token(){
+        $token = JWTAuth::getToken();
+        if(!$token){
+            throw new BadRequestHttpException('Token not provided');
+        }
+        try{
+            $token = JWTAuth::refresh($token);
+        }catch(TokenInvalidException $e){
+            throw new AccessDeniedHttpException('The token is invalid');
+        }
+        return response()->json(['token' => $token]);
     }
 
     private function userTopicsArray($topics)
