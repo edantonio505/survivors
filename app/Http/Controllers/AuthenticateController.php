@@ -142,7 +142,8 @@ class AuthenticateController extends Controller
 
         $UserFromRequestObject = [
           'token' => $token, 
-          'user_name' => $user->name, 
+          'user_name' => $user->name,
+          'email' => $user->email,
           'user_avatar' => $user->getAvatarListUrl(),
           'event_logs' => $logs,
           'log_count' => count($logs)
