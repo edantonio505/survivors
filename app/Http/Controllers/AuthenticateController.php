@@ -12,7 +12,7 @@ class AuthenticateController extends Controller
 {	
   public function __construct()
   {
-    $this->middleware('jwt.auth', ['except' => ['authenticate', 'signupOauth']]);
+    $this->middleware('jwt.auth', ['except' => ['authenticate', 'signupOauth', 'token']]);
   }        
 
 
@@ -82,15 +82,8 @@ class AuthenticateController extends Controller
 
     public function token(){
         $token = JWTAuth::getToken();
-        if(!$token){
-            throw new BadRequestHttpException('Token not provided');
-        }
-        try{
-            $token = JWTAuth::refresh($token);
-        }catch(TokenInvalidException $e){
-            throw new AccessDeniedHttpException('The token is invalid');
-        }
-        return response()->json(['token' => $token]);
+        $newToken = JWTAuth::refresh($token);
+        return response()->json(['token' => $newToken]);
     }
 
     private function userTopicsArray($topics)
