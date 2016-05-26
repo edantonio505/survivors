@@ -23,8 +23,8 @@ class AuthenticateController extends Controller
 
    public function authenticate(Request $request)
     {
-        $credentials = $request->only('email', 'password');
-        return response()->json($this->getUserFromRequest($credentials, $request));
+        $credentials = ['email' => $request->input('email'), 'password' => $request->input('password')];
+        return response()->json($this->getUserFromRequest($credentials));
     }
 
 
@@ -116,13 +116,14 @@ class AuthenticateController extends Controller
             'avatar' => $data['picture']
         ]);
 
-        return $user;
+        $credentials = ['email' => $user->email, 'password' => $request->input('password')];
+        return response()->json($this->getUserFromRequest($credentials));
     }
 
 
 
     // ----------------------------------------------------------------------------------------
-    private function getUserFromRequest($credentials, $request)
+    private function getUserFromRequest($credentials)
     {
        try {
             // verify the credentials and create a token for the user
@@ -135,7 +136,7 @@ class AuthenticateController extends Controller
         }
  
         // if no errors are encountered we can return a JWT
-        $user = User::where('email', $request->input('email'))->first();
+        $user = User::where('email', $credentials['email'])->first();
 
         $logs = $this->returnUserCredentials($user);
 
