@@ -17,6 +17,7 @@ use App\Helpers\EventsNotifications;
 use File;
 use App\Events\NewPost;
 use App\Events\UserUninspired;
+use DB;
 
 class MobileTopicController extends Controller
 {	
@@ -57,26 +58,49 @@ class MobileTopicController extends Controller
    	public function create()
    	{
    		$topicTitle = TopicOfTheDayTitle::all();
-   		$tags = Tag::all();
-   		return response()->json(['tags' => $tags, 'topicTitle' => $topicTitle]);
+   		$t = Tag::all();
+      foreach($t as $tag)
+      {
+        $ts['text'] = '#'.$tag->name;
+        $tags[] = $ts;
+      }
+
+      return response()->json(['tags' => $tags, 'topicTitle' => $topicTitle]);
    	}
 
 
 
+
    	public function store(Request $request)
-   	{
+   	{ 
    		$user = User::where('email', $request->input('email'))->first();
-   		$tag = Tag::where('name', $request->input('tags'))->first();
    		$topicTitle = TopicOfTheDayTitle::where('topic_title', $request->input('topic_title'))->first();
-      $tagAttach[] = $tag->id;
+      $tagAttach = [];
+
+      if(count($request->input('tags')) > 0)
+      {
+        foreach($request->input('tags') as $tag)
+        {
+          $newtag = Tag::firstOrCreate(['name' => str_replace("#", "", $tag['text'])]);
+          $tagAttach[] = $newtag->id;
+        }
+      }
+
+
       $en = new EventsNotifications();
       event(new NewPost($user->name));
+
+
+
    		$topic = $user->topics()->create([
    			'title' => $request->input('title'),
    			'body' => $request->input('body'),
    			'slug' => $request->input('slug'),
    			'topic_title_id' => $topicTitle->id
    		]);
+
+
+
    		$topic->tags()->attach($tagAttach);
       $en->ConnectioPostedNewTopic($user, $topic->id);
 
