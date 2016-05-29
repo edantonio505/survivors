@@ -73,7 +73,7 @@ class MobileTopicController extends Controller
 
    	public function store(Request $request)
    	{ 
-      return $request->input();
+      return $request->input('tags');
    		// $user = User::where('email', $request->input('email'))->first();
    		// $topicTitle = TopicOfTheDayTitle::where('topic_title', $request->input('topic_title'))->first();
      //  $tagAttach = [];
