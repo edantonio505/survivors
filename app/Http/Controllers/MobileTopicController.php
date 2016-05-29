@@ -73,14 +73,21 @@ class MobileTopicController extends Controller
 
    	public function store(Request $request)
    	{ 
-      return $request->input('tags');
    		// $user = User::where('email', $request->input('email'))->first();
    		// $topicTitle = TopicOfTheDayTitle::where('topic_title', $request->input('topic_title'))->first();
      //  $tagAttach = [];
+      $inputTags = $request->input('tags');
 
-     //  if(count($request->input('tags')) > 0)
+      if($request->hasFile('video') || $request->hasFile('file'))
+      {
+        $inputTags = json_decode($request->input('tags'), true);
+      }
+
+      return $inputTags;
+
+     //  if(count($inputTags) > 0)
      //  {
-     //    foreach($request->input('tags') as $tag)
+     //    foreach($inputTags as $tag)
      //    {
      //      $newtag = Tag::firstOrCreate(['name' => str_replace("#", "", $tag['text'])]);
      //      $tagAttach[] = $newtag->id;
