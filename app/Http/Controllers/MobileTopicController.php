@@ -73,9 +73,9 @@ class MobileTopicController extends Controller
 
    	public function store(Request $request)
    	{ 
-   		// $user = User::where('email', $request->input('email'))->first();
-   		// $topicTitle = TopicOfTheDayTitle::where('topic_title', $request->input('topic_title'))->first();
-     //  $tagAttach = [];
+   		$user = User::where('email', $request->input('email'))->first();
+   		$topicTitle = TopicOfTheDayTitle::where('topic_title', $request->input('topic_title'))->first();
+      $tagAttach = [];
       $inputTags = $request->input('tags');
 
       if($request->hasFile('video') || $request->hasFile('file'))
@@ -83,80 +83,78 @@ class MobileTopicController extends Controller
         $inputTags = json_decode($request->input('tags'), true);
       }
 
-      return $inputTags;
-
-     //  if(count($inputTags) > 0)
-     //  {
-     //    foreach($inputTags as $tag)
-     //    {
-     //      $newtag = Tag::firstOrCreate(['name' => str_replace("#", "", $tag['text'])]);
-     //      $tagAttach[] = $newtag->id;
-     //    }
-     //  }
+      if(count($inputTags) > 0)
+      {
+        foreach($inputTags as $tag)
+        {
+          $newtag = Tag::firstOrCreate(['name' => str_replace("#", "", $tag['text'])]);
+          $tagAttach[] = $newtag->id;
+        }
+      }
 
 
-     //  $en = new EventsNotifications();
-     //  event(new NewPost($user->name));
+      $en = new EventsNotifications();
+      event(new NewPost($user->name));
 
 
 
-   		// $topic = $user->topics()->create([
-   		// 	'title' => $request->input('title'),
-   		// 	'body' => $request->input('body'),
-   		// 	'slug' => $request->input('slug'),
-   		// 	'topic_title_id' => $topicTitle->id
-   		// ]);
+   		$topic = $user->topics()->create([
+   			'title' => $request->input('title'),
+   			'body' => $request->input('body'),
+   			'slug' => $request->input('slug'),
+   			'topic_title_id' => $topicTitle->id
+   		]);
 
 
 
-   		// $topic->tags()->attach($tagAttach);
-     //  $en->ConnectioPostedNewTopic($user, $topic->id);
+   		$topic->tags()->attach($tagAttach);
+      $en->ConnectioPostedNewTopic($user, $topic->id);
 
-   		// // -----------------------------------files-------------------------------------
-   		//    if($request->hasFile('video'))
-     //    {   
-     //        $video = $request->file('video');
-     //        $name = time().$topic->slug.$topic->user->name.$video->getClientOriginalName();
-     //        $thumbnail_name = time().$topic->slug.$topic->user->name.'.jpg';
-     //        $path = 'https://s3-us-west-2.amazonaws.com/edantonio505-survivors-network/';
-     //        $topic->video = $path.$name;
-     //        $topic->video_thumbnail = $path.$thumbnail_name;
-     //        $topic->save();
-     //        $content = file_get_contents($video->getRealPath());
-     //        $ffmpeg = FFMpeg::create(array(
-     //            'ffmpeg.binaries'  => '/home/forge/FFmpeg/ffmpeg',
-     //            'ffprobe.binaries' => '/home/forge/FFmpeg/ffprobe',
-     //            'timeout'          => 3600,
-     //            'ffmpeg.threads'   => 12,
-     //        ));
-     //        $videoImage = $ffmpeg->open($video->getRealPath());
-     //        $frame = $videoImage->frame(TimeCode::fromSeconds(2))->save($thumbnail_name);
-     //        $thumbnail_content = Image::make($thumbnail_name)->resize(320, null, function ($constraint) {
-     //            $constraint->aspectRatio();
-     //        });
-     //        Storage::disk('s3')->put('/'.$thumbnail_name, $thumbnail_content->response()->content());
-     //        Storage::disk('s3')->put('/'.$name, $content);
-     //        File::delete($thumbnail_name);
-     //    }
+   		// -----------------------------------files-------------------------------------
+   		   if($request->hasFile('video'))
+        {   
+            $video = $request->file('video');
+            $name = time().$topic->slug.$topic->user->name.$video->getClientOriginalName();
+            $thumbnail_name = time().$topic->slug.$topic->user->name.'.jpg';
+            $path = 'https://s3-us-west-2.amazonaws.com/edantonio505-survivors-network/';
+            $topic->video = $path.$name;
+            $topic->video_thumbnail = $path.$thumbnail_name;
+            $topic->save();
+            $content = file_get_contents($video->getRealPath());
+            $ffmpeg = FFMpeg::create(array(
+                'ffmpeg.binaries'  => '/home/forge/FFmpeg/ffmpeg',
+                'ffprobe.binaries' => '/home/forge/FFmpeg/ffprobe',
+                'timeout'          => 3600,
+                'ffmpeg.threads'   => 12,
+            ));
+            $videoImage = $ffmpeg->open($video->getRealPath());
+            $frame = $videoImage->frame(TimeCode::fromSeconds(2))->save($thumbnail_name);
+            $thumbnail_content = Image::make($thumbnail_name)->resize(320, null, function ($constraint) {
+                $constraint->aspectRatio();
+            });
+            Storage::disk('s3')->put('/'.$thumbnail_name, $thumbnail_content->response()->content());
+            Storage::disk('s3')->put('/'.$name, $content);
+            File::delete($thumbnail_name);
+        }
 
 
-   		// if ($request->hasFile('file')) {
-     //       $file = $request->file('file');
-     //       $name = time().$topic->slug.$topic->user->name.$file->getClientOriginalName();
-     //       $path = 'https://s3-us-west-2.amazonaws.com/edantonio505-survivors-network/';
-     //       $photo = $topic->photos()->create([
-     //            'name' => $name,
-     //            'path' => $path.$name,
-     //            'thumbnail_path' => $path.'tn-'.$name
-     //        ]);
-     //       $content = file_get_contents($file->getRealPath());
-     //       $height = Image::make($file)->height();
-     //       $width = Image::make($file)->width();
-     //       $thumbnail = ($height > $width ? Image::make($file)->fit(320, 354) : Image::make($file)->resize(320, null, function ($constraint){$constraint->aspectRatio();}));
-     //       Storage::disk('s3')->put('/'.$name, $content);
-     //       Storage::disk('s3')->put('/tn-'.$name, $thumbnail->response()->content());
-     //  }
-   		// return 'success';
+   		if ($request->hasFile('file')) {
+           $file = $request->file('file');
+           $name = time().$topic->slug.$topic->user->name.$file->getClientOriginalName();
+           $path = 'https://s3-us-west-2.amazonaws.com/edantonio505-survivors-network/';
+           $photo = $topic->photos()->create([
+                'name' => $name,
+                'path' => $path.$name,
+                'thumbnail_path' => $path.'tn-'.$name
+            ]);
+           $content = file_get_contents($file->getRealPath());
+           $height = Image::make($file)->height();
+           $width = Image::make($file)->width();
+           $thumbnail = ($height > $width ? Image::make($file)->fit(320, 354) : Image::make($file)->resize(320, null, function ($constraint){$constraint->aspectRatio();}));
+           Storage::disk('s3')->put('/'.$name, $content);
+           Storage::disk('s3')->put('/tn-'.$name, $thumbnail->response()->content());
+      }
+   		return 'success';
    	}
 
     public function addConnection(Request $request)
