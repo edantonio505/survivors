@@ -17,12 +17,14 @@ class EventsNotifications {
 		}
 
 
-		if($username != $topic->user->name)
+
+	    event(new UserIsInspired($username, $topic->id, $topic->user->name));
+	    if($username != $topic->user->name)
 		{
-			event(new UserIsInspired($username, $topic->id, $topic->user->name));
 			$this->createEventLog('user_inspired', $topic->user, $username, $topic->id); 
 		}
-	}
+	    
+	}	
 
 
 	public function NotifyAllUsersForNewComment(TopicOfTheDay $topic, $username = null)
