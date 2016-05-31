@@ -16,8 +16,12 @@ class EventsNotifications {
 			$username = Auth::user()->name;
 		}
 
-	    event(new UserIsInspired($username, $topic->id, $topic->user->name));
-	    $this->createEventLog('user_inspired', $topic->user, $username, $topic->id); 
+
+		if($username != $topic->user->name)
+		{
+			event(new UserIsInspired($username, $topic->id, $topic->user->name));
+			$this->createEventLog('user_inspired', $topic->user, $username, $topic->id); 
+		}
 	}
 
 
