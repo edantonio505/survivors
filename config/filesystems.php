@@ -62,6 +62,14 @@ return [
             'bucket' => 'edantonio505-survivors-network',
         ],
 
+        's3-video' => [
+            'driver'=> 's3_custom',
+            'key' => 'AKIAI4TT4LH2XNTYZXJQ',
+            'secret' => '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',
+            'region' => 'us-west-2',
+            'bucket' => 'edantonio505-survivors-network',
+        ],
+
     ],
 
 ];

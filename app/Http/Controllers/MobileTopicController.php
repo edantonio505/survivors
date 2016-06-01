@@ -133,7 +133,7 @@ class MobileTopicController extends Controller
                 $constraint->aspectRatio();
             });
             Storage::disk('s3')->put('/'.$thumbnail_name, $thumbnail_content->response()->content());
-            Storage::disk('s3')->put('/'.$name, $content);
+            Storage::disk('s3-video')->put('/'.$name, $content);
             File::delete($thumbnail_name);
         }
 
