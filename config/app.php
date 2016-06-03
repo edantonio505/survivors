@@ -150,7 +150,6 @@ return [
         Barryvdh\Cors\ServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
         Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
-        App\Providers\S3VideoServiceProvider::class,
 
         /*
          * Application Service Providers...

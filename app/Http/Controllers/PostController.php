@@ -12,6 +12,7 @@ use Storage;
 use App\Tag;
 use FFMpeg\FFMpeg;
 use FFMpeg\Coordinate\TimeCode;
+use FFMpeg\Format\Video\X264;
 use File;
 use App\Helpers\EventsNotifications;
 use App\Events\NewPost;
@@ -50,26 +51,47 @@ class PostController extends Controller
             $name = time().$topic->slug.$topic->user->name.$video->getClientOriginalName();
             $thumbnail_name = time().$topic->slug.$topic->user->name.'.jpg';
             $path = 'https://s3-us-west-2.amazonaws.com/edantonio505-survivors-network/';
-            $topic->video = $path.$name;
-            $topic->video_thumbnail = $path.$thumbnail_name;
-            $topic->save();
+            
+
             $content = file_get_contents($video->getRealPath());
             $ffmpeg = FFMpeg::create(array(
-                'ffmpeg.binaries'  => '/home/forge/FFmpeg/ffmpeg',
-                'ffprobe.binaries' => '/home/forge/FFmpeg/ffprobe',
-                // 'ffmpeg.binaries'  => '/home/vagrant/FFmpeg/ffmpeg',
-                // 'ffprobe.binaries' => '/home/vagrant/FFmpeg/ffprobe',
+                'ffmpeg.binaries'  => '/home/forge/ffmpeg/ffmpeg',
+                'ffprobe.binaries' => '/home/forge/ffmpeg/ffprobe',
+                // 'ffmpeg.binaries'  => '/home/vagrant/ffmpeg/ffmpeg',
+                // 'ffprobe.binaries' => '/home/vagrant/ffmpeg/ffprobe',
                 'timeout'          => 3600,
                 'ffmpeg.threads'   => 12,
             ));
-            $videoImage = $ffmpeg->open($video->getRealPath());
-            $frame = $videoImage->frame(TimeCode::fromSeconds(2))->save($thumbnail_name);
+            // $ffmpeg->getFFMpegDriver()->listen(new \Alchemy\BinaryDriver\Listeners\DebugListener());
+            // $ffmpeg->getFFMpegDriver()->on('debug', function ($message) {
+            //     echo $message."\n";
+            // });
+
+            $videoInput = $ffmpeg->open($video->getRealPath());
+            $frame = $videoInput->frame(TimeCode::fromSeconds(2))->save($thumbnail_name);
+
+            if($video->getMimeType() != 'video/mp4')
+            {   
+                $name = str_replace(".".pathinfo($name, PATHINFO_EXTENSION),'.mp4', $name);
+                $videoInput->save(new X264(), $name);
+                $content = file_get_contents($name);
+            }
+
+
+            $topic->video = $path.$name;
+            $topic->video_thumbnail = $path.$thumbnail_name;
+            $topic->save();
+
+
             $thumbnail_content = Image::make($thumbnail_name)->resize(320, null, function ($constraint) {
                 $constraint->aspectRatio();
             });
+
+
             Storage::disk('s3')->put('/'.$thumbnail_name, $thumbnail_content->response()->content());
-            Storage::disk('s3-video')->put('/'.$name, $content);
+            Storage::disk('s3')->put('/'.$name, $content);
             File::delete($thumbnail_name);
+            File::delete($name);
         }
 
         
