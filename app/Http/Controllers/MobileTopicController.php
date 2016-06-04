@@ -13,6 +13,7 @@ use Storage;
 use Image;
 use FFMpeg\FFMpeg;
 use FFMpeg\Coordinate\TimeCode;
+use FFMpeg\Format\Video\X264;
 use App\Helpers\EventsNotifications;
 use File;
 use App\Events\NewPost;
