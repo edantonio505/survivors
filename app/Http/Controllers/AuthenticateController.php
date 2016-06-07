@@ -114,23 +114,30 @@ class AuthenticateController extends Controller
 
 
     public function signupOauth(Request $request)
-    {
-        $q = 'https://www.googleapis.com/oauth2/v1/userinfo?access_token='.$request->input('access_token');
+    {   
+        $facebook = 'https://graph.facebook.com/me?fields=email,first_name,last_name,gender,picture&access_token='.$request->input('access_token');
+        $google = 'https://www.googleapis.com/oauth2/v1/userinfo?access_token='.$request->input('access_token');
+
+        $q = ($request->input('social_type') == 'google' ? $google : $facebook);
+ 
         $json = file_get_contents($q);
+
+
         $data = json_decode($json,true);
 
+        
         $parts = explode("@", $data['email']);
         $name = $parts[0];
 
-
+       
         $user =  User::create([
             'name' => $name, 
             'email' => $data['email'],
             'password' => bcrypt($request->input('password')),
-            'first_name' => $data['given_name'],
-            'last_name' => $data['family_name'],
+            'first_name' => ($request->input('social_type') == 'google' ? $data['given_name'] : $data['first_name']),
+            'last_name' => ($request->input('social_type') == 'google' ?  $data['family_name'] : $data['last_name']),
             'gender' => $data['gender'],
-            'avatar' => $data['picture']
+            'avatar' => ($request->input('social_type') == 'google' ? $data['picture'] : $data['picture']['data']['url'])
         ]);
 
         $credentials = ['email' => $user->email, 'password' => $request->input('password')];
