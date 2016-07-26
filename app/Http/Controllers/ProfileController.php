@@ -30,7 +30,7 @@ class ProfileController extends Controller
     	if($request->hasFile('file'))
     	{
     		$file = $request->file('file');
-    		$name = time().$topic->slug.$topic->user->name.$file->getClientOriginalName();
+    		$name = time().'avatar'.$user->name.$file->getClientOriginalName();
            	$path = 'https://s3-us-west-2.amazonaws.com/edantonio505-survivors-network/';
            	$user->avatar = $path.$name;
            	$user->save();
