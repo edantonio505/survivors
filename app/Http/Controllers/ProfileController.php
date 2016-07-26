@@ -23,7 +23,12 @@ class ProfileController extends Controller
     			return 'saved successfully';
     		}
     		return 'Name is taken';
-    	} 
+    	}
+
+    	if($request->hasFile('file'))
+    	{
+    		return 'YAY!';
+    	}
 
     }
 }
