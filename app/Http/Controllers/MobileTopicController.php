@@ -19,6 +19,7 @@ use File;
 use App\Events\NewPost;
 use App\Events\UserUninspired;
 use DB;
+use App\ReportedUsers;
 
 class MobileTopicController extends Controller
 {	
@@ -48,7 +49,11 @@ class MobileTopicController extends Controller
   		foreach($topicsOfTheDay as $topicDay)
   		{	
         $topic = $this->TopicToArray($topicDay, $user);
-  			$data[] = $topic;		
+
+        if($topic != null)
+        {
+          $data[] = $topic;
+        }
   		}
 		  $topics['data'] = $data;
    		return Response::json($topics, 200);
@@ -194,10 +199,14 @@ class MobileTopicController extends Controller
       $connectionsReturn = [];
       foreach($connections as $connection)
       { 
-        $con['id'] = $connection->id;
-        $con['name'] = $connection->name;
-        $con['avatar'] = $connection->getAvatarListUrl();
-        $connectionsReturn[] = $con;
+        $r = ReportedUsers::where('user_id', $connection->id)->first();
+        
+        if(!$r || (isset($r) && $r->blocked ==0)){
+          $con['id'] = $connection->id;
+          $con['name'] = $connection->name;
+          $con['avatar'] = $connection->getAvatarListUrl();
+          $connectionsReturn[] = $con;
+        }
       }
       return response()->json($connectionsReturn);
     }
@@ -297,10 +306,19 @@ class MobileTopicController extends Controller
     public function searchBy($input)
     { 
       $users = User::all();
+
+      foreach($users as $user)
+      { 
+        $r = ReportedUsers::where('user_id', $user->id)->first();
+        if(!$r || (isset($r) && $r->blocked == 0)){
+          $freeUsers[] = $user;
+        }
+      }
+
       $tags = Tag::all();
       if($input == 'name')
       {
-        return $users;
+        return $freeUsers;
       }
 
       return $tags;
@@ -383,32 +401,38 @@ class MobileTopicController extends Controller
 
     private function TopicToArray($topicDay, $user)
     { 
-      $topic['id'] = $topicDay->id;
-      $topic['title'] = $topicDay->title;
-      $topic['category'] = TopicOfTheDayTitle::findOrFail($topicDay->topic_title_id)->topic_title;
-      if($topicDay->checkIfHasPhotos() && $topicDay->checkIfHasVideo() !=  True){
-        $topic['picture'] = $topicDay->photos->first()->path;
-        $topic['pic_thumbnail'] = $topicDay->photos->first()->thumbnail_path;
-      } else {
-        $topic['picture'] = "";
-        $topic['pic_thumbnail'] = "";
+      $r = ReportedUsers::where('user_id', $topicDay->user->id)->first();
+      $topic = null;
+      if(!$r || (isset($r) && $r->blocked == 0)) {
+        $topic['id'] = $topicDay->id;
+        $topic['title'] = $topicDay->title;
+        $topic['category'] = TopicOfTheDayTitle::findOrFail($topicDay->topic_title_id)->topic_title;
+        if($topicDay->checkIfHasPhotos() && $topicDay->checkIfHasVideo() !=  True){
+          $topic['picture'] = $topicDay->photos->first()->path;
+          $topic['pic_thumbnail'] = $topicDay->photos->first()->thumbnail_path;
+        } else {
+          $topic['picture'] = "";
+          $topic['pic_thumbnail'] = "";
+        }
+        if($topicDay->checkIfHasVideo() && $topicDay->checkIfHasPhotos() != true){
+          $topic['video'] = $topicDay->video;
+          $topic['video_thumbnail'] = $topicDay->video_thumbnail;
+        } else {
+          $topic['video'] = "";
+          $topic['video_thumbnail'] = "";
+        }
+        $topic['tags'] = $topicDay->tags;
+        $topic['inspires'] = $topicDay->inspired->count();
+        $topic['summary'] = substr($topicDay->body, 0, 100);
+        $topic['body'] = $topicDay->body;
+        $topic['user_name'] = $topicDay->user->name;
+        $topic['user_avatar'] = $topicDay->user->getAvatarListUrl();
+        $topic['created_time'] = $topicDay->created_at->diffForHumans();
+        $topic['inspiredBy'] = $user->checkInspirationTopic($topicDay);
+        $topic['comments_ammount'] = $topicDay->comments->count();
       }
-      if($topicDay->checkIfHasVideo() && $topicDay->checkIfHasPhotos() != true){
-        $topic['video'] = $topicDay->video;
-        $topic['video_thumbnail'] = $topicDay->video_thumbnail;
-      } else {
-        $topic['video'] = "";
-        $topic['video_thumbnail'] = "";
-      }
-      $topic['tags'] = $topicDay->tags;
-      $topic['inspires'] = $topicDay->inspired->count();
-      $topic['summary'] = substr($topicDay->body, 0, 100);
-      $topic['body'] = $topicDay->body;
-      $topic['user_name'] = $topicDay->user->name;
-      $topic['user_avatar'] = $topicDay->user->getAvatarListUrl();
-      $topic['created_time'] = $topicDay->created_at->diffForHumans();
-      $topic['inspiredBy'] = $user->checkInspirationTopic($topicDay);
-      $topic['comments_ammount'] = $topicDay->comments->count();
+
+      
       return $topic;
     }
 }

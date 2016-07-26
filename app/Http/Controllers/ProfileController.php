@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
+use App\ReportedUsers;
 use App\User;
 use Storage;
 use Image;
@@ -39,6 +40,21 @@ class ProfileController extends Controller
 
            	return response()->json(['new_avatar' => $path.$name]);
     	}
+    }
 
+
+
+
+    /*---------------------------------------
+                REPORTING USER
+    -----------------------------------------*/
+    public function report(Request $request)
+    {
+      $user = User::where('name', $request->input('username'))->first();
+      $report = new ReportedUsers;
+      $report->user_id = $user->id;
+      $report->report = $request->input('report');
+      $report->save();
+      return 'user_reported';
     }
 }

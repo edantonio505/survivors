@@ -45,6 +45,7 @@ Route::group(['prefix' => 'api/v1', 'middleware' => 'cors'], function()
     Route::post('authenticate/signup_oauth', 'AuthenticateController@signupOauth');
     Route::get('delegate', 'AuthenticateController@token');
     Route::post('update_profile', 'ProfileController@update');
+    Route::post('report', 'ProfileController@report');
 });
 
 /*

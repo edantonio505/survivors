@@ -7,6 +7,7 @@ use App\Http\Requests;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use App\User;
+use App\ReportedUsers;
 
 class AuthenticateController extends Controller
 {	
@@ -155,14 +156,19 @@ class AuthenticateController extends Controller
 
         $logs = $this->returnUserCredentials($user);
 
-        $UserFromRequestObject = [
-          'token' => $token, 
-          'user_name' => $user->name,
-          'email' => $user->email,
-          'user_avatar' => $user->getAvatarListUrl(),
-          'event_logs' => $logs,
-          'log_count' => count($logs)
-        ];
+        $r = ReportedUsers::where('user_id', $user->id)->first();
+        $UserFromRequestObject = 'user_banned';
+
+        if(!$r || (isset($r) && $r->blocked == 0)){
+          $UserFromRequestObject = [
+            'token' => $token, 
+            'user_name' => $user->name,
+            'email' => $user->email,
+            'user_avatar' => $user->getAvatarListUrl(),
+            'event_logs' => $logs,
+            'log_count' => count($logs)
+          ];
+        }
 
         return $UserFromRequestObject;
     }
