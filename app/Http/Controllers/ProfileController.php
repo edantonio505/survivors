@@ -40,7 +40,7 @@ class ProfileController extends Controller
            	$thumbnail = ($height > $width ? Image::make($file)->fit(320, 354) : Image::make($file)->resize(320, null, function ($constraint){$constraint->aspectRatio();}));
            	Storage::disk('s3')->put('/'.$name, $content);
 
-           	return response()->json(['response' => 'new_pic_success', 'new_avatar' => $path.$path]);
+           	return response()->json(['new_avatar' => $path.$path]);
     	}
 
     }
