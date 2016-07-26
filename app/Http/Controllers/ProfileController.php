@@ -38,7 +38,7 @@ class ProfileController extends Controller
            	$thumbnail = Image::make($file)->fit(350, 350);
            	Storage::disk('s3')->put('/'.$name, $content);
 
-           	return response()->json(['new_avatar' => $path.$path]);
+           	return response()->json(['new_avatar' => $path.$name]);
     	}
 
     }
