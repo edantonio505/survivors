@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\User;
+use Storage;
+use Image;
 
 class ProfileController extends Controller
 {
@@ -27,7 +29,16 @@ class ProfileController extends Controller
 
     	if($request->hasFile('file'))
     	{
-    		return 'YAY!';
+    		$file = $request->file('file');
+    		$name = time().$topic->slug.$topic->user->name.$file->getClientOriginalName();
+           	$path = 'https://s3-us-west-2.amazonaws.com/edantonio505-survivors-network/';
+           	$user->avatar = $path.$name;
+           	$user->save();
+           	$content = file_get_contents($file->getRealPath());
+           	$height = Image::make($file)->height();
+           	$width = Image::make($file)->width();
+           	$thumbnail = ($height > $width ? Image::make($file)->fit(320, 354) : Image::make($file)->resize(320, null, function ($constraint){$constraint->aspectRatio();}));
+           	Storage::disk('s3')->put('/'.$name, $content);
     	}
 
     }
