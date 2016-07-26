@@ -34,9 +34,8 @@ class ProfileController extends Controller
            	$path = 'https://s3-us-west-2.amazonaws.com/edantonio505-survivors-network/';
            	$user->avatar = $path.$name;
            	$user->save();
-           	$content = file_get_contents($file->getRealPath());
            	$thumbnail = Image::make($file)->fit(350, 350);
-           	Storage::disk('s3')->put('/'.$name, $content);
+           	Storage::disk('s3')->put('/'.$name, $thumbnail->response()->content());
 
            	return response()->json(['new_avatar' => $path.$name]);
     	}
