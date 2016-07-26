@@ -15,7 +15,7 @@ class ProfileController extends Controller
     	$user = User::where('email', $request->input('email'))->first();
     	$already_exists = (bool) User::where('name', $newName)->first();
 
-    	if($newName != $user->name && $newName != ''){
+    	if($request->input('newUsername') && $newName != $user->name && $newName != ''){
     		if(!$already_exists)
     		{
     			$user->name = $newName;
