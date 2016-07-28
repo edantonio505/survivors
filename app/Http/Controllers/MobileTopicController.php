@@ -29,7 +29,9 @@ class MobileTopicController extends Controller
 	    $this->middleware('jwt.auth');
 	}
 
-	
+    /*=======================================================================================
+                                    GET ALL POSTS
+    =========================================================================================*/	
    	public function index($authUser)
    	{
       $data = [];
@@ -58,9 +60,15 @@ class MobileTopicController extends Controller
 		  $topics['data'] = $data;
    		return Response::json($topics, 200);
    	}
+    // =====================================================================================
 
 
 
+
+
+    /*=========================================================================================
+                                  GET OPTIONS FOR CREATING NEW POSTS
+    ==========================================================================================*/
    	public function create()
    	{
    		$topicTitle = TopicOfTheDayTitle::all();
@@ -73,22 +81,32 @@ class MobileTopicController extends Controller
 
       return response()->json(['tags' => $tags, 'topicTitle' => $topicTitle]);
    	}
+    // ======================================================================================
 
 
 
 
+
+
+    /*============================================================================================
+                                            STORING A NEW POST
+    ==============================================================================================*/
    	public function store(Request $request)
    	{ 
    		$user = User::where('email', $request->input('email'))->first();
+
+      /*-------------------------------Avoid for banned user to create posts-----------------*/
+      $r = ReportedUsers::where('user_id', $user->id)->first();
+      if(isset($r) && $r->blocked != 0){return 'banned';}
+      // --------------------------------------------------------------------------------------
+
    		$topicTitle = TopicOfTheDayTitle::where('topic_title', $request->input('topic_title'))->first();
       $tagAttach = [];
       $inputTags = $request->input('tags');
-
       if($request->hasFile('video') || $request->hasFile('file'))
       {
         $inputTags = json_decode($request->input('tags'), true);
       }
-
       if(count($inputTags) > 0)
       {
         foreach($inputTags as $tag)
@@ -97,26 +115,20 @@ class MobileTopicController extends Controller
           $tagAttach[] = $newtag->id;
         }
       }
-
-
       $en = new EventsNotifications();
       event(new NewPost($user->name));
-
-
-
    		$topic = $user->topics()->create([
    			'title' => $request->input('title'),
    			'body' => $request->input('body'),
    			'slug' => $request->input('slug'),
    			'topic_title_id' => $topicTitle->id
    		]);
-
-
-
    		$topic->tags()->attach($tagAttach);
       $en->ConnectioPostedNewTopic($user, $topic->id);
 
-   		// -----------------------------------files-------------------------------------
+        // ------------------------------------------------------------------------------
+        //                            UPLOAD FILES(PICTURES OR VIDEOS)
+        // -----------------------------------------------------------------------------
    		   if($request->hasFile('video'))
         {   
             $video = $request->file('video');
@@ -132,31 +144,37 @@ class MobileTopicController extends Controller
                 'ffmpeg.threads'   => 12,
             ));
             $videoInput = $ffmpeg->open($video->getRealPath());
+
+            
+            // -------------------------------CREATE A VIDEO THUMBNAIL-------------------
             $frame = $videoInput->frame(TimeCode::fromSeconds(2))->save($thumbnail_name);
             
+
+            // ---------------------------------------------------------------------------
+            //                 IF VIDEO IS NOT MP4 TRANSFORM VIDEO TO MP4
+            // ---------------------------------------------------------------------------
             if($video->getMimeType() != 'video/mp4')
             {   
                 $name = str_replace(".".pathinfo($name, PATHINFO_EXTENSION),'.mp4', $name);
                 $videoInput->save(new X264(), $name);
                 $content = file_get_contents($name);
             }
-
-
             $topic->video = $path.$name;
             $topic->video_thumbnail = $path.$thumbnail_name;
             $topic->save();
-
-
             $thumbnail_content = Image::make($thumbnail_name)->resize(320, null, function ($constraint) {
                 $constraint->aspectRatio();
             });
+
+
+            // -------------------------------------------------------------------------------
+            //                      SAVE VIDEO IN AMAZON S3
+            // -------------------------------------------------------------------------------
             Storage::disk('s3')->put('/'.$thumbnail_name, $thumbnail_content->response()->content());
             Storage::disk('s3')->put('/'.$name, $content);
             File::delete($thumbnail_name);
             File::delete($name);
         }
-
-
    		if ($request->hasFile('file')) {
            $file = $request->file('file');
            $name = time().$topic->slug.$topic->user->name.$file->getClientOriginalName();
@@ -175,7 +193,15 @@ class MobileTopicController extends Controller
       }
    		return 'success';
    	}
+    // ======================================================================================
 
+
+
+
+
+    /*========================================================================================
+                                    CREATING A NEW CONNECTION BETWEN USERS
+    ==========================================================================================*/
     public function addConnection(Request $request)
     {   
       $Authenticated = User::where('email', $request->input('authenticated'))->first();
@@ -183,7 +209,15 @@ class MobileTopicController extends Controller
       $Authenticated->addConnection($user);
       return 'connection requested';
     }
+    // ======================================================================================
 
+
+
+
+
+    /*=======================================================================================
+                                    ACCEPTING A CONNECTION REQUEST
+    ========================================================================================*/
     public function acceptConnection(Request $request)
     {
       $AuthUser = User::where('email', $request->input('authenticated'))->first();
@@ -191,8 +225,15 @@ class MobileTopicController extends Controller
       $AuthUser->acceptConnectionRequest($user);
       return 'Connected';
     }
+    // ======================================================================================
 
 
+
+
+
+    /*========================================================================================
+                          GET ALL USERS CONNECTED TO THE AUTHENTICATED USER
+    ==========================================================================================*/
     public function getConnections(Request $request)
     {
       $connections = User::where('email', $request->input('AuthEmail'))->first()->connections()->sortBy('name');
