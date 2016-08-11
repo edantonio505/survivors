@@ -73,6 +73,7 @@ class MobileTopicController extends Controller
    	{
    		$topicTitle = TopicOfTheDayTitle::all();
    		$t = Tag::all();
+      $tags = array();
       foreach($t as $tag)
       {
         $ts['text'] = '#'.$tag->name;
