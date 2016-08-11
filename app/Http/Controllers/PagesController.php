@@ -9,18 +9,14 @@ use App\User;
 use App\TopicOfTheDay;
 use App\TopicOfTheDayTitle;
 use App\Tag;
+use Auth;
 
 class PagesController extends Controller
 {
     public function index()
     {	
-        $tags = Tag::all();
-        $titles = TopicOfTheDayTitle::all();
-    	$topics = TopicOfTheDay::orderBy('created_at', 'desc')->get();
-    	return view('welcome')
-            ->withTopics($topics)
-            ->withTitles($titles)
-            ->withTags($tags);
+        $link = (Auth::check() ? '<a href="/logout">Logout</a>' : '<a href="/login">Admin Login</a>');
+        return 'SpeakOut server <br />' .$link;
     }
 
 
