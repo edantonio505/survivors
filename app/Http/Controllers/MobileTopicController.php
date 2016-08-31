@@ -135,7 +135,7 @@ class MobileTopicController extends Controller
             $video = $request->file('video');
             $name = time().$topic->slug.$topic->user->name.$video->getClientOriginalName();
             $thumbnail_name = time().$topic->slug.$topic->user->name.'.jpg';
-            $path = 'https://s3-us-west-2.amazonaws.com/edantonio505-survivors-network/';
+            $path = 'https://s3-us-west-2.amazonaws.com/speakout-survivorsnetwork/';
             
             $content = file_get_contents($video->getRealPath());
             $ffmpeg = FFMpeg::create(array(
@@ -179,7 +179,7 @@ class MobileTopicController extends Controller
    		if ($request->hasFile('file')) {
            $file = $request->file('file');
            $name = time().$topic->slug.$topic->user->name.$file->getClientOriginalName();
-           $path = 'https://s3-us-west-2.amazonaws.com/edantonio505-survivors-network/';
+           $path = 'https://s3-us-west-2.amazonaws.com/speakout-survivorsnetwork/';
            $photo = $topic->photos()->create([
                 'name' => $name,
                 'path' => $path.$name,
