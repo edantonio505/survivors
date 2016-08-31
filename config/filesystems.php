@@ -56,10 +56,10 @@ return [
 
         's3' => [
             'driver' => 's3',
-            'key' => 'AKIAI4TT4LH2XNTYZXJQ',
-            'secret' => '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',
+            'key' => 'AKIAJNXNP4BWQEPFVHBQ',
+            'secret' => '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',
             'region' => 'us-west-2',
-            'bucket' => 'edantonio505-survivors-network',
+            'bucket' => 'speakout-survivorsnetwork',
         ]
 
     ],
