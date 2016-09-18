@@ -62,10 +62,10 @@ class PostController extends Controller
                 'timeout'          => 3600,
                 'ffmpeg.threads'   => 12,
             ));
-            // $ffmpeg->getFFMpegDriver()->listen(new \Alchemy\BinaryDriver\Listeners\DebugListener());
-            // $ffmpeg->getFFMpegDriver()->on('debug', function ($message) {
-            //     echo $message."\n";
-            // });
+            $ffmpeg->getFFMpegDriver()->listen(new \Alchemy\BinaryDriver\Listeners\DebugListener());
+            $ffmpeg->getFFMpegDriver()->on('debug', function ($message) {
+                echo $message."\n";
+            });
 
             $videoInput = $ffmpeg->open($video->getRealPath());
             $frame = $videoInput->frame(TimeCode::fromSeconds(2))->save($thumbnail_name);
