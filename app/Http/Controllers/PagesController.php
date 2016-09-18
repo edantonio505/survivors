@@ -17,8 +17,9 @@ class PagesController extends Controller
     {	
         // $link = (Auth::check() ? '<a href="/logout">Logout</a>' : '<a href="/login">Admin Login</a>');
         // return 'SpeakOut server <br />' .$link;
+        $topics = TopicOfTheDay::all();
 
-        return view('welcome');
+        return view('welcome', ['topics' => $topics]);
     }
 
 
