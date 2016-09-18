@@ -19,8 +19,9 @@ class PagesController extends Controller
         // return 'SpeakOut server <br />' .$link;
         $titles = TopicOfTheDayTitle::all();
         $topics = TopicOfTheDay::all();
+        $tags = Tag::all();
 
-        return view('welcome', ['topics' => $topics, 'titles' => $titles]);
+        return view('welcome', ['topics' => $topics, 'titles' => $titles, 'tags' => $tags]);
     }
 
 
