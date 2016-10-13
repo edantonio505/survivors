@@ -32,7 +32,7 @@ class ProfileController extends Controller
     	{
     		$file = $request->file('file');
     		$name = time().'avatar'.$user->name.$file->getClientOriginalName();
-           	$path = 'https://s3-us-west-2.amazonaws.com/edantonio505-survivors-network/';
+           	$path = 'https://s3-us-west-2.amazonaws.com/speakout-survivorsnetwork/';
            	$user->avatar = $path.$name;
            	$user->save();
            	$thumbnail = Image::make($file)->fit(320, 320);
